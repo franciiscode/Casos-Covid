@@ -1,0 +1,3 @@
+Paquetes instalados:
+1.- modulo requests: paquete para consumir la API
+2.- 
