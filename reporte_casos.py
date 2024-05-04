@@ -1,12 +1,10 @@
 #Agregar directorios de los modulos al PATH de python
 import sys
 sys.path.append('Modulos')
-
-
-
 #Modulos del menu
 import modulo_consulta_web as mcw
 import modulo_consulta_registros as mcr
+
 
 #MENÚ PRINCIPAL
 
@@ -20,7 +18,7 @@ dict_menu = {
 
 print("-----MENÚ-----")
 #Mostrar Menu principal
-for clave, valor in dict_menu.items():#tupla clave,calor del diccionario
+for clave, valor in dict_menu.items():
     print(clave + "-" + valor)
 
 opcion = input("Elegir opción: ")
@@ -36,14 +34,4 @@ elif opcion == "4": #submenu - graficas
 else: #salir
     pass
 
-
-'''
-def iniciar():
-    print("Nombre del modulo: ", __name__)
-
-
-if __name__ == "__main__":
-    iniciar()
-
-'''
 
