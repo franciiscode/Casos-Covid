@@ -1,21 +1,22 @@
 
 #Modulos necesarios
 import requests #Modulo para consumir la API
-import pandas as pd #dataframes
-import os #limpiar consola
 
 #Declaración de métodos
-
+"""
+import os #limpiar consola
 def clear_console():#Método para limpiar la consola
-    os.system('cls' if os.name == 'nt' else 'clear')
+os.system('cls' if os.name == 'nt' else 'clear')
+clear_console()
+"""
 
-def consultar_global():
+def consultar_totales_mx():
     """
-    Devuelve la información en una lista de los casos totales de COVID-19 en todos los paises. 
+    Devuelve la información en una lista de los casos totales de COVID-19 en México. 
     """
-    clear_console()
-    print("Casos COVID-19 totales para todos los paises")
-    #Solicitud con GET de los casos totales de todos los paises
+  
+    print("Casos totales del COVID-19 en México")
+    #Solicitud con GET de los casos totales para Mexico
     url = "https://disease.sh/v3/covid-19/countries"
     response = requests.get(url)
 
@@ -25,42 +26,42 @@ def consultar_global():
     else:
         print("Hubo un problema con la solicitud: Código de estado", response.status_code)
     
-    #Recolectar los datos en un json
+    #Se almacenan los datos json en una lista y se devuelven 
     data = response.json() 
     return data
     
-    
-
-
-def consultar_pais():
-    #print("Casos COVID-19 para un país en específico")
-    pass
-
-def consultar_conjunto_paises():
-    pass
-
-
-
-def iniciar():
-    """submenu principal
+def consultar_historicos_mx():
     """
-    #Mostrar submenu principal
-    print("\n\nSubmenú consultas web\n")
-    print("1- Casos COVID-19 globales\n2- Casos dos\n3- Casos dos\n4- Casos dos\n5- Casos dos\n")
-    opcion_web = input("Selecciona una opcion: ")
+    Devuelve la información en una lista de los casos históricos de COVID-19 en México del 22/1/20
+    a 9/3/23. 
+    """
+    print("Casos historicos del COVID-19 para México")
+    #Solicitud con GET de los casos históricos para Mexico
+    url = "https://disease.sh/v3/covid-19/historical/Mexico?lastdays=all"
+    response = requests.get(url)
 
-    if opcion_web == "1": #Consultar casos para todos los países
-        data = consultar_global()
+    #Validad respuesta
+    if response.status_code == 200:
+        print("La solicitud fue exitosa!")
+    else:
+        print("Hubo un problema con la solicitud: Código de estado", response.status_code)
+    
+    #Se almacenan los datos json en una lista y se devuelven 
+    data = response.json() 
+    return data
 
-        df_data = pd.DataFrame(data) #Guardar datos obtenidos en un dataframe
-        print(df_data.head(5))
-        
-        
-    elif opcion_web == "2":
-        #consultar_pais()  
-        pass    
-    elif opcion_web== "3":
-        pass
-    elif opcion_web=="4":
-        pass
+def consultar_casos_nl():
+    """
+    Devuelve la información en una lista de los casos históricos de COVID-19 en México del 22/1/20
+    a 9/3/23 para el estado de Nuevo León.
+    """
+    pass
+
+def consultar_vacunas():
+    """
+    Devuelve la información en una lista de los casos históricos de COVID-19 en México del 22/1/20
+    a "9/3/23"  
+    """
+    pass
+ 
 
