@@ -14,8 +14,6 @@ def consultar_totales_paises(pais):  # noqa: F821
     """
     Devuelve la información de los casos totales de COVID-19 de algun pais en especifico. 
     """
-  
-    print("Casos totales del COVID-19 en México")
     #Solicitud con GET de los casos totales para Mexico
     url = f'https://disease.sh/v3/covid-19/countries/{pais}?strict=false'
     response = requests.get(url)
