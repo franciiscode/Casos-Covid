@@ -48,7 +48,7 @@ def menu_principal():
             print("Opción no válida. Elije una opción del 1 al 6.")
 
 #OPCIONES DEL MENU PRINCIPAL
-def mostrar_submenu(names_list):
+def mostrar_submenu(names_list:list):
     """ Muestra las subopciones para cada opcion del menú principal
     """
     print("\n--- Submenú {} ---\n".format(names_list[0]["submenu_name"]))
@@ -64,21 +64,22 @@ def submenu_consulta_web():
     while True:
         #Se manda la lista de los nombres de las subopciones del menu
         subopciones_names= [{"submenu_name":"Consulta Web"},
-                            "Casos totales de COVID-19 en México",
-                            "Casos históricos totales de COVID-19 en Mexico",
+                            "Casos totales de COVID-19 para pais en específico",
+                            "Casos historicos totales de COVID-19 para pais en especifico",
                             "Casos totales de COVID-19 para todos los paises",
-                            "Casos globales históricos COVID-19",
-                            "Dosis de vacunas administradas en México",
+                            "Casos globales acumulados historicos de COVID-19",
+                            "Dosis de vacunas administradas en Mexico",
                             ]
         mostrar_submenu(subopciones_names) 
         opcion = input('Seleccione una opción: ')
 
         if opcion == '1':
-            country = input('Pais a buscar')
-            
-            data_totales = mcw.consultar_totales_paises(country) # "dict" data de la api
+            print('\n')
+            print(f'--------{subopciones_names[1]}--------')
+            pais_totales = input('Selecciona un pais a buscar, iso2, iso3, o country ID code: ')
+            data_totales = mcw.consultar_totales_pais(pais_totales) # 'dict' data de la api
+            print('\n')
             #Se cambian los nombres y eliminan los datos innecesarios del JSON recibido 
-            data_totales.pop("updated") 
             data_totales = {
                 "1":["pais",data_totales["country"]],
                 "2":["poblacion",data_totales["population"]],
@@ -98,22 +99,33 @@ def submenu_consulta_web():
             #Se construye un DataFrame con los datos recibidos para mostrar la info
             df_totales = pd.DataFrame.from_dict(data_totales, orient = 'Index', columns= ["Nombre", "Valor"])
             df_totales.index.name = None
-            print('--------------------------------------')
+            print(f'Casos totales de COVID-19 para {pais_totales} ({data_totales['1'][1]})')
+            print('-------------------------------------')
             print(df_totales)
-            print('--------------------------------------')
-            print('\n(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)')  
+            print('-------------------------------------')
+            print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)')  
                     
         elif opcion == '2':
-            data_historicos_mx = mcw.consultar_historicos_mx()
-            #Se guardan los datos recibidos en un dataframe
-            print(data_historicos_mx)
+            print('\n')
+            print(f'--------{subopciones_names[2]}--------')
+            pais_historicos = input('Selecciona un pais a buscar, iso2, iso3, o country ID code: ')
+            data_historicos = mcw.consultar_historicos(pais_historicos) # 'dict'
+            print('\n')
+            #Se guardan los datos de interes en un dataframe
+            df_historicos = pd.DataFrame(data_historicos['timeline'])
             
-            
+            print(f'Casos historicos totales de COVID-19 para {pais_totales} ({data_historicos['country']})')
+            print('-------------------------------------')
+            print(df_historicos)
+            print('-------------------------------------')
+            print('(Datos de COVID-19 procedentes de la Universidad Johns Hopkins, actualizados cada 10 minutos)')  
             
         elif opcion == '3':
+            print('\n')
+            print(f'----------------------------------{subopciones_names[3]}--------------------------------')
             data_globales = mcw.consultar_globales() #list
-            
-            df_globales = pd.DataFrame(data_globales) # "DataFrame"
+            print('\n')
+            df_globales = pd.DataFrame(data_globales) # 'DataFrame'
             #Se eliminan las columnas que no se necesitan del dataframe
             df_globales.drop(labels =["updated", "countryInfo", "testsPerOneMillion", "oneCasePerPeople", "oneDeathPerPeople",
                                           "oneTestPerPeople", "activePerOneMillion", "recoveredPerOneMillion", "criticalPerOneMillion"],
@@ -122,14 +134,25 @@ def submenu_consulta_web():
             #Cambiamos los nombres de las columnas e imprimimos el dataframe
             df_globales.columns = ["País", "Casos", "CasosDeHoy", "Muertes", "MuertesDeHoy", "Recuperados","RecuperadosDeHoy", "Activos",
                                        "Críticos", "CasosPorMillon", "MuertesPorMillon","Pruebas", "Población", "Continente"]
-            print(df_globales)
             
+            print('-'*113)
+            print(df_globales)
+            print('-'*113)
+            print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)')  
             
         elif opcion == '4':
+            print('\n')
+            print(f'--------{subopciones_names[4]}--------')
+            num_dias = input('Ingresa el numero de días a mostrar ("all" para mostrar todos los dias): ')
+            data_globales_historicos = mcw.consultar_globales_historicos(num_dias)
+            print('\n')
             
-            data_globales_historicos = mcw.consultar_globales_historicos()
-            print(data_globales_historicos)
-            print(type(data_globales_historicos))
+            df_globales_historicos = pd.DataFrame(data_globales_historicos)
+            print('Casos globales acumulados historicos de COVID-19')
+            print('-------------------------------------')
+            print(df_globales_historicos)
+            print('-------------------------------------')
+            print('(Datos de COVID-19 procedentes de la Universidad Johns Hopkins, actualizados cada 10 minutos)')  
             
         elif opcion == '5':
             data_vacunas = mcw.consultar_vacunas()

@@ -10,30 +10,30 @@ os.system('cls' if os.name == 'nt' else 'clear')
 clear_console()
 """
 
-def consultar_totales_paises(pais):  # noqa: F821
+def consultar_totales_pais(pais = 'Mexico'):
     """
-    Devuelve la información de los casos totales de COVID-19 de algun pais en especifico. 
+    Devuelve la información en un JSON de los casos totales de COVID-19 de algun pais en especifico. Por default
+    devuelve los datos para Mexico.
     """
-    #Solicitud con GET de los casos totales para Mexico
+    #Solicitud con GET de los casos
     url = f'https://disease.sh/v3/covid-19/countries/{pais}?strict=false'
     response = requests.get(url)
     if response.status_code == 200:
         print("La solicitud fue exitosa!")
     else:
         print("Hubo un problema con la solicitud: Código de estado", response.status_code)
-    
+        
     #Se almacenan los datos json recibidos
     data = response.json() 
     return data
     
-def consultar_historicos_mx():
+def consultar_historicos(pais = 'Mexico'):
     """
-    Devuelve la información en una lista de los casos históricos de COVID-19 en México del 22/1/20
-    a 9/3/23. 
+    Devuelve la información en un JSON de los datos historicos registrados de COVID-19 para pais 
+    en especifico del 22/1/20 al 9/3/23. Por default devuelve la información para Mexico.
     """
-    print("Casos historicos del COVID-19 para México")
-    #Solicitud con GET de los casos históricos para Mexico
-    url = "https://disease.sh/v3/covid-19/historical/Mexico?lastdays=all"
+    #Solicitud con GET de los casos históricos para pais en espec.
+    url = f'https://disease.sh/v3/covid-19/historical/{pais}?lastdays=all'
     response = requests.get(url)
 
     #Validad respuesta
@@ -48,9 +48,9 @@ def consultar_historicos_mx():
 
 def consultar_globales():
     """
-    Devuelve la información de los casos totales para todos los paises.
+    Devuelve la información en un JSON de los casos totales del COVID-19 
+    para todos los paises.
     """
-    print("Casos globales de COVID-19")
     #Solicitud con GET de los casos totales globales
     url = "https://disease.sh/v3/covid-19/countries"
     response = requests.get(url)
@@ -65,13 +65,13 @@ def consultar_globales():
     data = response.json()
     return data
 
-def consultar_globales_historicos():
+def consultar_globales_historicos(num_dias = 'all'):
     """
-    Devuelve la información de los casos globales acumulados historicos.
+    Devuelve la información de los casos globales acumulados historicos del 22/1/20
+    a 9/3/23.
     """
-    print("Casos globales históricos de COVID-19 en todos los paises")
     #Solicitud con GET de los casos globales historicos
-    url = "https://disease.sh/v3/covid-19/historical/all?lastdays=all"
+    url = f'https://disease.sh/v3/covid-19/historical/all?lastdays={num_dias}'
     response = requests.get(url)
 
     #Validar respuesta
@@ -89,7 +89,6 @@ def consultar_vacunas():
     Devuelve la información de las dosis totales de vacunas administradas en Mexico de 1/12/20-presente,
     reportadas por el gobierno.
     """
-    print("Dosis totales de vacunas administradas en Mexico")
     #Solicitud con GET de las vacunas
     url = "https://disease.sh/v3/covid-19/vaccine/coverage/countries/Mexico?lastdays=all&fullData=false"
     response = requests.get(url)
