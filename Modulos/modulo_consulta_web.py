@@ -2,13 +2,13 @@
 #Modulos necesarios
 import requests #Modulo para consumir la API
 
-#Declaración de métodos
 """
 import os #limpiar consola
 def clear_console():#Método para limpiar la consola
 os.system('cls' if os.name == 'nt' else 'clear')
 clear_console()
 """
+#opciones del menu consulta web
 
 def consultar_totales_pais(pais = 'Mexico'):
     """
@@ -84,13 +84,13 @@ def consultar_globales_historicos(num_dias = 'all'):
     data = response.json() 
     return data
 
-def consultar_vacunas():
+def consultar_vacunas(pais = 'Mexico'):
     """
-    Devuelve la información de las dosis totales de vacunas administradas en Mexico de 1/12/20-presente,
-    reportadas por el gobierno.
+    Devuelve la información de las dosis totales de vacunas administradas para pais en especifico
+    del 1/12/20 al presente reportadas por el gobierno. Por default devuelve la información para Mexico.
     """
     #Solicitud con GET de las vacunas
-    url = "https://disease.sh/v3/covid-19/vaccine/coverage/countries/Mexico?lastdays=all&fullData=false"
+    url = f'https://disease.sh/v3/covid-19/vaccine/coverage/countries/{pais}?lastdays=all&fullData=false'
     response = requests.get(url)
 
     #Validar respuesta
@@ -103,5 +103,5 @@ def consultar_vacunas():
     data = response.json() 
     return data
  
-#
+ 
 

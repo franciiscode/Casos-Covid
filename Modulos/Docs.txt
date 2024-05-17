@@ -1,4 +1,6 @@
 Paquetes instalados:
+Tener instalado pip 
+
 1.- Modulo requests: paquete para consumir la API
     Instalamos el modulo con:
     pip install requests 

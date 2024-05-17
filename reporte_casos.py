@@ -1,14 +1,18 @@
 #Modulos
+from os import write #
 import sys
 sys.path.append('Modulos') #Agrega los directorios de los modulos al PATH de python
-import pandas as pd
+import pandas as pd #
+#import numpy as pd
+import datetime #modulo para mostrar la fecha y hora
 import modulo_consulta_web as mcw
-#import modulo_consulta_registros as mcr
+import modulo_consulta_registros as mcr
 #import modulo_estadisticas as mstats
 #import modulo_graficas as mplots
+#Variables globales
 
 
-#MENU PRINCIPAL
+# Mostrar menu prinicipal
 def mostrar_menu_principal():
     """
     Muestra las opciones del menú principal.
@@ -32,11 +36,10 @@ def menu_principal():
         if opcion == '1': #consultar casos
             submenu_consulta_web()
         elif opcion == '2': #consultar registros
+            submenu_consulta_registros()
             pass
-            #submenu_opcion2()
         elif opcion == '3': #estadisticas
             pass
-            #submenu_opcion3()
         elif opcion == '4': #graficas
             pass
         elif opcion == '5':#borrar datos
@@ -47,7 +50,9 @@ def menu_principal():
         else: 
             print("Opción no válida. Elije una opción del 1 al 6.")
 
-#OPCIONES DEL MENU PRINCIPAL
+
+# Opciones del menu principal---
+
 def mostrar_submenu(names_list:list):
     """ Muestra las subopciones para cada opcion del menú principal
     """
@@ -58,7 +63,7 @@ def mostrar_submenu(names_list:list):
     for opcion in range(1,len(names_list)):
         print("{}. {}".format(opcion,names_list[opcion]))
     print("R. Regresar al Menú Principal")
-
+# Consultas a la API
 def submenu_consulta_web():
     """Invoca las opciones"""
     while True:
@@ -68,7 +73,7 @@ def submenu_consulta_web():
                             "Casos historicos totales de COVID-19 para pais en especifico",
                             "Casos totales de COVID-19 para todos los paises",
                             "Casos globales acumulados historicos de COVID-19",
-                            "Dosis de vacunas administradas en Mexico",
+                            "Dosis de vacunas administradas para pais en especifico",
                             ]
         mostrar_submenu(subopciones_names) 
         opcion = input('Seleccione una opción: ')
@@ -78,6 +83,10 @@ def submenu_consulta_web():
             print(f'--------{subopciones_names[1]}--------')
             pais_totales = input('Selecciona un pais a buscar, iso2, iso3, o country ID code: ')
             data_totales = mcw.consultar_totales_pais(pais_totales) # 'dict' data de la api
+            #se muestra la fecha y hora de la consulta
+            current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))) #GMT-6
+            current_time = current_datetime.strftime("%H_%M_%S")
+            current_date = current_datetime.strftime("%d_%m_%Y")
             print('\n')
             #Se cambian los nombres y eliminan los datos innecesarios del JSON recibido 
             data_totales = {
@@ -99,12 +108,35 @@ def submenu_consulta_web():
             #Se construye un DataFrame con los datos recibidos para mostrar la info
             df_totales = pd.DataFrame.from_dict(data_totales, orient = 'Index', columns= ["Nombre", "Valor"])
             df_totales.index.name = None
-            print(f'Casos totales de COVID-19 para {pais_totales} ({data_totales['1'][1]})')
+            print(f'Casos totales de COVID-19 en {pais_totales} ({data_totales['1'][1]})')
             print('-------------------------------------')
             print(df_totales)
             print('-------------------------------------')
-            print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)')  
+            print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)') 
+            
+            print('\nDesea guardar el registro de la consulta anterior?')
+            print('1. Si')
+            print('2. No. Regresar al menu anterior')
+            respuesta = input('Seleccionar opcion: ')
+            while True:
+                if respuesta == '1':
+                    #Escritura del archivo con el formato reporte_fecha_hora.txt
+                    f = open(f'Reportes de Consulta API/reporte_{current_date}_{current_time}.txt', mode = "w")
+                    f.write(f'{data_totales}')
+                    f.close()
                     
+                    ruta_data_totales = f'Reportes de Consulta API/reporte_{current_date}_{current_time}.txt'
+                    #Guardar la ruta en el archivo de rutas
+                    f = open('Reportes de consulta API/rutas_registros_totales_pais.txt', mode = 'a')
+                    f.write(f'\n{ruta_data_totales}')
+                    f.close()
+                    print('La consulta anterior se ha guardado correctamente...')
+                    break
+                elif respuesta == '2':
+                    break
+                else:
+                    print('Ingresa una opción valida.\n')
+            
         elif opcion == '2':
             print('\n')
             print(f'--------{subopciones_names[2]}--------')
@@ -114,11 +146,19 @@ def submenu_consulta_web():
             #Se guardan los datos de interes en un dataframe
             df_historicos = pd.DataFrame(data_historicos['timeline'])
             
-            print(f'Casos historicos totales de COVID-19 para {pais_totales} ({data_historicos['country']})')
+            print(f'Casos historicos totales de COVID-19 en {pais_historicos} ({data_historicos['country']})')
             print('-------------------------------------')
             print(df_historicos)
             print('-------------------------------------')
             print('(Datos de COVID-19 procedentes de la Universidad Johns Hopkins, actualizados cada 10 minutos)')  
+            
+            
+            
+            f = open('Reportes de Consulta API/prueba.txt', mode = "w")
+            f.write(f'{data_historicos['country']}\n')
+            f.write(f'{data_historicos['timeline']}')
+            f.close()
+            print('La consulta se ha guardado...')
             
         elif opcion == '3':
             print('\n')
@@ -155,23 +195,79 @@ def submenu_consulta_web():
             print('(Datos de COVID-19 procedentes de la Universidad Johns Hopkins, actualizados cada 10 minutos)')  
             
         elif opcion == '5':
-            data_vacunas = mcw.consultar_vacunas()
-            print(data_vacunas)
-            print(type(data_vacunas))
+            print('\n')
+            print(f'--------{subopciones_names[5]}--------')
+            pais_vacunas = input('Selecciona un pais a buscar, iso2, iso3, o country ID code: ')
+            data_vacunas = mcw.consultar_vacunas(pais_vacunas)
+            print('\n')
+            df_vacunas = pd.DataFrame.from_dict(data_vacunas['timeline'], orient = 'index', columns= ['dosis administradas'])
+            print(f'Dosis de vacunas administradas en {pais_vacunas} ({data_vacunas['country']})')
+            
+            print('-------------------------------------')
+            print(df_vacunas)
+            print('-------------------------------------')
+            print('Dosis de vacuna COVID-19 administradas para paises que han notificado el despliegue de vacunacion.')
+            print('Fuente de https://covid.ourworldindata.org/') 
             
         elif opcion == 'R':
             break
              
         else:
-            print("Opción no válida. Por favor, elija una opción del 1 al 5.")
+            print("Opción no valida. Por favor, elija una opción del 1 al 5.")
             
 #submenú para consultar los registros hechos de la función .submenu_consulta_web()
 def submenu_consulta_registros():
-    pass
+    
     """
     Pendiente
     """
-#submenú para consultar las estadísticas
+    subopciones_names= [{"submenu_name":"Consulta sin internet"},
+                            "Registros Casos totales de COVID-19 para pais en específico",
+                            "Registros Casos historicos totales de COVID-19 para pais en especifico",
+                            "Registros Casos totales de COVID-19 para todos los paises",
+                            "Registros Casos globales acumulados historicos de COVID-19",
+                            "Registros Dosis de vacunas administradas para pais en especifico",
+                            ]
+    
+    
+    mostrar_submenu(subopciones_names) 
+    opcion = input('Seleccione una opción: ')
+   
+    if opcion == '1': #Registros Casos totales de COVID-19 para pais en especifico
+        print('\n')
+        print(f'--------{subopciones_names[1]}--------')
+        
+        print(f'1. Ver todos los {subopciones_names[1]}')
+        print('2. Buscar registro')
+        print('R. Regresar al menu anterior')
+        respuesta = input('Seleccionar opcion: ')
+        if respuesta == '1': #Mostrar todos los registros
+            #Mostramos todas las rutas de las consultas disponibles
+            with open('Reportes de consulta API/rutas_registros_totales_pais.txt') as f:
+                for ruta in f:
+                    file = open(ruta)
+                    print(file.read())
+                    file.close()
+                    
+        elif respuesta == '2': #Buscar registro
+            
+            pass
+        else:
+            pass
+    elif opcion == '2': #"Registros Casos historicos totales de COVID-19 para pais en especifico"
+        pass
+    elif opcion == '3': #"Registros Casos totales de COVID-19 para todos los paises"
+        pass
+    elif opcion == '4': #"Registros Casos globales acumulados historicos de COVID-19"
+        pass
+    elif opcion == '5': #"Registros Dosis de vacunas administradas para pais en especifico"
+        pass
+    elif opcion == 'R': #Regresar
+        pass
+    else:
+        print('Ingresa una opcion valida')
+        
+#submenú para consultar las estadísticas de las consultas a la API
 def submenu_estadisticas():
     pass
     """
@@ -192,7 +288,7 @@ def submenu_estadisticas():
         else:
             print("Opción no válida. Por favor, elija una opción del 1 al 3.")
     """
-#submenú para consultar las graficas
+#submenú para consultar las graficas de las consultas a la API
 def submenu_graficas():
     pass
     """
@@ -213,10 +309,11 @@ def submenu_graficas():
         else:
             print("Opción no válida. Por favor, elija una opción del 1 al 3.")
     """
-##Metodo para borrar todos los registros
+
 def submenu_borrar_registros():
     pass
 
+#iniciar el programa
 if __name__ == "__main__":
-    menu_principal() #iniciar el programa
+    menu_principal() 
 
