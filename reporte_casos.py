@@ -1,6 +1,6 @@
 #Modulos
 from os import write #
-import sys
+import sys 
 sys.path.append('Modulos') #Agrega los directorios de los modulos al PATH de python
 import pandas as pd #
 #import numpy as pd
@@ -65,7 +65,7 @@ def mostrar_submenu(names_list:list):
     print("R. Regresar al Menú Principal")
 # Consultas a la API
 def submenu_consulta_web():
-    """Invoca las opciones"""
+    """Invoca las opciones que se pueden consultar ala API"""
     while True:
         #Se manda la lista de los nombres de las subopciones del menu
         subopciones_names= [{"submenu_name":"Consulta Web"},
