@@ -1,4 +1,5 @@
 #Modulos
+from math import e
 from os import write #
 import sys 
 sys.path.append('Modulos') #Agrega los directorios de los modulos al PATH de python
@@ -97,7 +98,7 @@ def submenu_consulta_web():
                 "5":["muertes totales",data_totales["deaths"]],
                 "6":["muertes de hoy",data_totales["todayDeaths"]],
                 "7":["casos recuperados",data_totales["recovered"]],
-                "8":["casos recuperados_hoy", data_totales["todayRecovered"]],
+                "8":["casos recuperados hoy", data_totales["todayRecovered"]],
                 "9":["casos activos", data_totales["active"]],
                 "10":["casos criticos", data_totales["critical"]],
                 "11":["pruebas totales", data_totales["tests"]],
@@ -121,15 +122,16 @@ def submenu_consulta_web():
             while True:
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
-                    f = open(f'Reportes de Consulta API/reporte_{current_date}_{current_time}.txt', mode = "w")
+                    f = open(f'Reportes de consulta API/reporte_{current_date}_{current_time}.txt', mode = "w")
                     f.write(f'{data_totales}')
                     f.close()
                     
-                    ruta_data_totales = f'Reportes de Consulta API/reporte_{current_date}_{current_time}.txt'
+                    ruta_data_totales = f'reporte_{current_date}_{current_time}.txt'
                     #Guardar la ruta en el archivo de rutas
                     f = open('Reportes de consulta API/rutas_registros_totales_pais.txt', mode = 'a')
-                    f.write(f'\n{ruta_data_totales}')
+                    f.write(f'{ruta_data_totales}\n')
                     f.close()
+                    #rutas["rutas_txt"].append(ruta_data_totales)
                     print('La consulta anterior se ha guardado correctamente...')
                     break
                 elif respuesta == '2':
@@ -217,55 +219,63 @@ def submenu_consulta_web():
             
 #submenú para consultar los registros hechos de la función .submenu_consulta_web()
 def submenu_consulta_registros():
-    
     """
-    Pendiente
+    Muestra y busca las consultas que se han realizado y guardado de la API.
     """
-    subopciones_names= [{"submenu_name":"Consulta sin internet"},
-                            "Registros Casos totales de COVID-19 para pais en específico",
-                            "Registros Casos historicos totales de COVID-19 para pais en especifico",
-                            "Registros Casos totales de COVID-19 para todos los paises",
-                            "Registros Casos globales acumulados historicos de COVID-19",
-                            "Registros Dosis de vacunas administradas para pais en especifico",
-                            ]
-    
-    
-    mostrar_submenu(subopciones_names) 
-    opcion = input('Seleccione una opción: ')
-   
-    if opcion == '1': #Registros Casos totales de COVID-19 para pais en especifico
-        print('\n')
-        print(f'--------{subopciones_names[1]}--------')
+    while True:
+        subopciones_names= [{"submenu_name":"Consulta sin internet"},
+                                "Registros Casos totales de COVID-19 para pais en específico",
+                                "Registros Casos historicos totales de COVID-19 para pais en especifico",
+                                "Registros Casos totales de COVID-19 para todos los paises",
+                                "Registros Casos globales acumulados historicos de COVID-19",
+                                "Registros Dosis de vacunas administradas para pais en especifico",
+                                ]
         
-        print(f'1. Ver todos los {subopciones_names[1]}')
-        print('2. Buscar registro')
-        print('R. Regresar al menu anterior')
-        respuesta = input('Seleccionar opcion: ')
-        if respuesta == '1': #Mostrar todos los registros
-            #Mostramos todas las rutas de las consultas disponibles
-            with open('Reportes de consulta API/rutas_registros_totales_pais.txt') as f:
-                for ruta in f:
-                    file = open(ruta)
-                    print(file.read())
-                    file.close()
-                    
-        elif respuesta == '2': #Buscar registro
+        
+        mostrar_submenu(subopciones_names) 
+        opcion = input('Seleccione una opción: ')
+    
+        if opcion == '1': #Registros Casos totales de COVID-19 para pais en especifico
+            print('\n')
+            print(f'--------{subopciones_names[1]}--------')
             
+            while True:
+                print('-------------------')
+                print('1. Buscar registro ')
+                print('R. Regresa al menu anterior')
+                eleccion = input('Selecciona una opcion: ')
+                if eleccion == '1':
+                    #Mostramos todas las rutas de las consultas disponibles
+                    print('\nReportes disponibles: ')
+                    with open('Reportes de consulta API/rutas_registros_totales_pais.txt') as f:
+                        for ruta in f:
+                            print(ruta)
+                    respuesta = input('Ingresa el nombre del registro (formato reporte_fecha_hora) a buscar: ')
+                    try:
+                        with open(f'Reportes de consulta API/{respuesta}') as f:
+                            print('\nRegistro encontrado:\n')
+                            print(f.read())
+                            
+                    except FileNotFoundError:
+                        print('No se ha encontrado archivo con ese nombre...\n')
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n')
+                elif eleccion == 'R':
+                    break
+                else:
+                    print('Elije una opcion valida.\n')  
+        elif opcion == '2': #"Registros Casos historicos totales de COVID-19 para pais en especifico"
             pass
+        elif opcion == '3': #"Registros Casos totales de COVID-19 para todos los paises"
+            pass
+        elif opcion == '4': #"Registros Casos globales acumulados historicos de COVID-19"
+            pass
+        elif opcion == '5': #"Registros Dosis de vacunas administradas para pais en especifico"
+            pass
+        elif opcion == 'R': #Regresar
+            break
         else:
-            pass
-    elif opcion == '2': #"Registros Casos historicos totales de COVID-19 para pais en especifico"
-        pass
-    elif opcion == '3': #"Registros Casos totales de COVID-19 para todos los paises"
-        pass
-    elif opcion == '4': #"Registros Casos globales acumulados historicos de COVID-19"
-        pass
-    elif opcion == '5': #"Registros Dosis de vacunas administradas para pais en especifico"
-        pass
-    elif opcion == 'R': #Regresar
-        pass
-    else:
-        print('Ingresa una opcion valida')
+            print('Ingresa una opcion valida')
         
 #submenú para consultar las estadísticas de las consultas a la API
 def submenu_estadisticas():
