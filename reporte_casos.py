@@ -37,7 +37,6 @@ def menu_principal():
             submenu_consulta_web()
         elif opcion == '2': #consultar registros
             submenu_consulta_registros()
-            
         elif opcion == '3': #estadisticas
             submenu_estadisticas()
         elif opcion == '4': #graficas
@@ -69,7 +68,7 @@ def submenu_consulta_web():
     while True:
         #Se manda la lista de los nombres de las subopciones del menu
         subopciones_names= [{"submenu_name":"Consulta Web"},
-                            "Casos totales de COVID-19 para pais en específico",
+                            "Casos totales de COVID-19 para pais en especifico",
                             "Casos historicos totales de COVID-19 para pais en especifico",
                             "Casos totales de COVID-19 para todos los paises",
                             "Casos globales acumulados historicos de COVID-19",
@@ -103,14 +102,21 @@ def submenu_consulta_web():
                 "11":["pruebas totales", data_totales["tests"]],
                 "12":["pruebas por millon", data_totales["testsPerOneMillion"]],
                 "13":["casos por millon", data_totales["casesPerOneMillion"]],
-                "14":["muertes por millon", data_totales["deathsPerOneMillion"]]
-            }   
+                "14":["muertes por millon", data_totales["deathsPerOneMillion"]],
+                '15':["pruebas por million", data_totales["testsPerOneMillion"]],
+                '16':["activos por millon", data_totales["activePerOneMillion"]],
+                '17':["recuperados por millon", data_totales["recoveredPerOneMillion"]],
+                '18':["Un caso por persona", data_totales["oneCasePerPeople"]],
+                '19':["Una muerte por persona", data_totales["oneDeathPerPeople"]],
+                '20':["Una prueba por persona", data_totales["oneTestPerPeople"]],
+            }     
             #Se construye un DataFrame con los datos recibidos para mostrar la info
             df_totales = pd.DataFrame.from_dict(data_totales, orient = 'Index', columns= ["Nombre", "Valor"])
             df_totales.index.name = None
+            
             print(f'Casos totales de COVID-19 en {pais_totales} ({data_totales['1'][1]})')
             print('-------------------------------------')
-            print(df_totales)
+            print(df_totales.iloc[:14,])
             print('-------------------------------------')
             print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)') 
             #Enviar variable a menu de graficas
@@ -120,7 +126,7 @@ def submenu_consulta_web():
             while True:
                 print('\nDesea guardar el registro de la consulta anterior?')
                 print('1. Si')
-                print('2. No. Regresar al menu anterior')
+                print('2. No.')
                 respuesta = input('Seleccionar opcion: ')
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
@@ -156,6 +162,25 @@ def submenu_consulta_web():
                     break
                 else:
                     print('Ingresa una opcion valida\n')
+            
+            #Guardar el dataframe de la consulta en un archivo excel
+            # Carpeta específica del espacio de trabajo
+             # Crear la carpeta si no existe
+        
+            ruta_carpeta = 'Reportes datos numericos/datos_totales_pais'
+            #Si no existe la ruta, la crea
+            if not os.path.exists(ruta_carpeta):
+                os.makedirs(ruta_carpeta)
+            
+            nombre_archivo_xlsx = f'consulta_{current_date}_{current_time}.xlsx'
+            #Verificar que el nombre del archivo tenga la extension correcta
+            if not nombre_archivo_xlsx.endswith('.xlsx'):
+                print("Error: El archivo debe tener la extensión '.xlsx'.")
+                return
+    
+            mstats.crear_archivo_excel(dataframe = df_totales,ruta_carpeta=ruta_carpeta, nombre_archivo = nombre_archivo_xlsx)
+           
+            
         elif opcion == '2':
             print('\n')
             print(f'--------{subopciones_names[2]}--------')
@@ -430,7 +455,7 @@ def submenu_consulta_registros():
     """
     while True:
         subopciones_names= [{"submenu_name":"Consulta sin internet"},
-                                "Registros Casos totales de COVID-19 para pais en específico",
+                                "Registros Casos totales de COVID-19 para pais en especifico",
                                 "Registros Casos historicos totales de COVID-19 para pais en especifico",
                                 "Registros Casos totales de COVID-19 para todos los paises",
                                 "Registros Casos globales acumulados historicos de COVID-19",
@@ -592,25 +617,66 @@ def submenu_consulta_registros():
         
 #submenú para consultar las estadísticas de las consultas a la API
 def submenu_estadisticas():
-    pass
-    """
+    """ Muestra algunos datos estadísticos"""
+    def buscar_y_abrir_excel(ruta_carpeta, nombre_archivo):
+    # Crear la ruta completa del archivo
+        ruta_completa = os.path.join(ruta_carpeta, nombre_archivo)
+        
+        # Verificar que el archivo exista y tenga la extensión correcta
+        if not os.path.isfile(ruta_completa):
+            print(f"Error: El archivo '{nombre_archivo}' no existe en la carpeta '{ruta_carpeta}'.")
+            return
+        
+        if not nombre_archivo.endswith('.xlsx'):
+            print("Error: El archivo debe tener la extensión '.xlsx'.")
+            return
+        
+        try:
+            # Leer el archivo Excel
+            df = pd.read_excel(ruta_completa)
+            print(f"El archivo '{ruta_completa}' se ha abierto exitosamente.")
+            print("Contenido del archivo:")
+            print(df)
+        except Exception as e:
+            print(f"Ocurrió un error al abrir el archivo Excel: {e}")
+
     while True:
-        subopciones_names = [] #Agregar nombres de las opciones que tendrá el submenu
-        mostrar_submenu_helper(subopciones_names) 
+        subopciones_names= [{"submenu_name":"Estadisticas"},
+                                "Estadisticas de Casos totales de COVID-19 para pais en especifico (ultima consulta)",
+                                "Estadisticas de Casos historicos totales de COVID-19 para pais en especifico (ultima consulta)",
+                                "Estadisticas de Casos totales de COVID-19 para todos los paises (ultima consulta)",
+                                "Estadisticas de Casos globales acumulados historicos de COVID-19 (ultima consulta)",
+                                "Estadisticas de Dosis de vacunas administradas para pais en especifico (ultima consulta)",
+                                ]
+        mostrar_submenu(subopciones_names) 
         opcion = input("Seleccione una opción: ")
         
         if opcion == '1':
-            #print("Ha seleccionado {}".format(subopciones_names[1]))
-            pass
+            print("Ha seleccionado {}".format(subopciones_names[1]))
+            
+            ruta_carpeta = 'Reportes datos numericos/datos_totales_pais'
+            print
+            if not os.path.exists(ruta_carpeta):
+                print(f"La carpeta '{ruta_carpeta}' no existe.")
+                return
+            nombre_archivo = input("Introduce el nombre del archivo de Excel a buscar (con extensión .xlsx): ").strip()
+            buscar_y_abrir_excel(ruta_carpeta, nombre_archivo)
+            
         elif opcion == '2':
-            #print("Ha seleccionado {}".format(subopciones_names[2]))
+            print("Ha seleccionado {}".format(subopciones_names[2]))
             pass
         elif opcion == '3':
-            #print("Ha seleccionado {}".format(subopciones_names[3]))
+            print("Ha seleccionado {}".format(subopciones_names[3]))
+            break
+        elif opcion == '4':
+            print("Ha seleccionado {}".format(subopciones_names[4]))
+            break
+        elif opcion == '5':
+            print("Ha seleccionado {}".format(subopciones_names[5]))
             break
         else:
             print("Opción no válida. Por favor, elija una opción del 1 al 3.")
-    """
+    
 #submenú para consultar las graficas de las consultas a la API
 def submenu_graficas():
     """
@@ -642,8 +708,7 @@ def submenu_graficas():
                 print("La carpeta 'Graficas' no existe.")
                 return
 
-            nombre_archivo = input("Introduce el nombre del archivo de la gráfica (con extensión)\nAsegurate que el archivo se encuentre en la carpeta Graficas: ").strip()
-            
+            nombre_archivo = input("Introduce el nombre del archivo de la grafica (con extension)\nAsegurate que el archivo se encuentre en la carpeta Graficas: ").strip()
             ruta_archivo = os.path.join(carpeta, nombre_archivo)
 
             if os.path.isfile(ruta_archivo):

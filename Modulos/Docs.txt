@@ -1,7 +1,19 @@
 Paquetes instalados:
-Tener instalado pip 
+Tener instalado el manejador de paquetes 'pip' 
 
-1.- Modulo requests: paquete para consumir la API
-    Instalamos el modulo con:
-    pip install requests 
-2.- 
+Instalar los paquetes: 
+ #Ejemplo
+ pip install requests
+
+
+- Modulos Necesarios:
+
+-pip install  os
+-pip install  pandas
+-pip install  seaborn
+-pip install  pandas openpyxlsx,
+-pip install sys
+-pip install  Pillow
+-pip install datetime 
+-pip install matplotlib.pyplot
+-pip install requests 

@@ -1,4 +1,4 @@
-from turtle import color
+#from turtle import color
 import matplotlib.pyplot as plt 
 import seaborn as sns
 
@@ -15,14 +15,14 @@ def graficar_totales_pais(df):
     # Agregar titulo y leyendas
     plt.xlabel('Categoria')
     plt.ylabel('Valor')
-    return plt
+    return plt #Se retorna la grafica
     
 def graficar_historicos_pais(df_historicos, current_date, current_time):
-    
+    #linea para los casos
     df_historicos['cases'].plot(kind='line', figsize=(8, 4))
-    
+    #linea para los casos recuperados
     df_historicos['recovered'].plot(kind='line', figsize=(8, 4))
-    
+    #linea para las muertes
     df_historicos['deaths'].plot(kind='line', figsize=(8, 4), title='Casos (azul) vs Recuperados (naranja) vs Muertes (verde)')
     plt.savefig(f'Graficas/casosVSrecuperadosVSmuertes_{current_date}_{current_time}.png') #guardar grafica
     
@@ -46,18 +46,22 @@ def graficar_globales(df_globales, current_date, current_time):
     plt.savefig(f'Graficas/continenteVScasos{current_date}_{current_time}.png') #guardar grafica
     
 def graficar_globales_historicos(df_globales_historicos, current_date, current_time):
-    
+    #Crea la primera linea relativa a los casos
     df_globales_historicos['cases'].plot(kind='line', figsize=(8, 4))
-    #plt.savefig(f'Graficas/casos_historicos_globales_{current_date}_{current_time}.png') #guardar grafica
-
-    df_globales_historicos['recovered'].plot(kind='line', figsize=(8, 4))
     
+    #Crea la segunda linea  relativa a los casos recuperados
+    df_globales_historicos['recovered'].plot(kind='line', figsize=(8, 4))
 
+    #Crear la tercera linea relativa a las muertes
     df_globales_historicos['deaths'].plot(kind='line', figsize=(8, 4), title='Casos (azul) vs Casos recuperados (naranja) vs Muertes (verde)')
-    plt.gca().spines[['top', 'right']].set_visible(False)
+    plt.gca().spines[['top', 'right']].set_visible(False) #mostrar la grafica
     plt.savefig(f'Graficas/casosVSrecuperadosVSmuertes_hist_{current_date}_{current_time}.png') #guardar grafica
 
 def graficar_vacunas(df_vacunas, current_date, current_time):
+    """
+    Muestra grafica de series temporales de las dosis administradas de un pais desde el inicio de la pandemia.
+    """
+    # grafica dosis administradas a traves del tiempo
     df_vacunas['dosis administradas'].plot(kind='line', figsize=(8, 4), title='dosis administradas', color = 'orange')
     plt.gca().spines[['top', 'right']].set_visible(False)
     plt.savefig(f'Graficas/dosis_administradas_{current_date}_{current_time}.png')

@@ -2,12 +2,6 @@
 #Modulos necesarios
 import requests #Modulo para consumir la API
 
-"""
-import os #limpiar consola
-def clear_console():#Método para limpiar la consola
-os.system('cls' if os.name == 'nt' else 'clear')
-clear_console()
-"""
 #opciones del menu consulta web
 
 def consultar_totales_pais(pais = 'Mexico'):
