@@ -9,9 +9,15 @@ import datetime #modulo para mostrar la fecha y hora
 import modulo_consulta_web as mcw
 import modulo_consulta_registros as mcr
 #import modulo_estadisticas as mstats
-#import modulo_graficas as mplots
-#Variables globales
+import modulo_graficas as mg
 
+graficas = {
+    'totales_pais': [],
+    'historicos_pais': [],
+    'globales': [],
+    'globales_historicos': [],
+    'vacunas': []
+    }
 
 # Mostrar menu prinicipal
 def mostrar_menu_principal():
@@ -38,11 +44,11 @@ def menu_principal():
             submenu_consulta_web()
         elif opcion == '2': #consultar registros
             submenu_consulta_registros()
-            pass
+            
         elif opcion == '3': #estadisticas
             pass
         elif opcion == '4': #graficas
-            pass
+            submenu_graficas()
         elif opcion == '5':#borrar datos
             pass
         elif opcion == '6': #Salir del programa
@@ -114,7 +120,10 @@ def submenu_consulta_web():
             print(df_totales)
             print('-------------------------------------')
             print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)') 
-            
+            #Enviar variable a menu de graficas
+            #graficas['totales_pais'].append(df_totales)
+  
+            #Guardar el archivo
             while True:
                 print('\nDesea guardar el registro de la consulta anterior?')
                 print('1. Si')
@@ -131,9 +140,27 @@ def submenu_consulta_web():
                     f = open('Reportes de consulta API/rutas_registros_totales_pais.txt', mode = 'a')
                     f.write(f'{ruta_data_totales}\n')
                     f.close()
-                    print('La consulta anterior se ha guardado correctamente...')
+                    print('La consulta anterior se ha guardado correctamente')
+                    print(f'con el nombre: reporte_{current_date}_{current_time}.txt')
+                    
+                    #Preguntar si quiere guardar la grafica de la consulta guardada
+                    while True:
+                        print('\nDesea guardar una gráfica para la consulta anterior?: ')
+                        print('1. Si')
+                        print('2. No. Regresar al menu anterior')
+                        generar = input('')
+                        if generar == '1':
+                            mg.graficar_totales_pais(df_totales).savefig(f'Graficas/histograma_{current_date}_{current_time}.png')
+                            
+                            print(f'\nLa grafica se ha guardado como histograma_{current_date}_{current_time}.png')
+                            print(f'Y su ubicación es: Graficas/histograma_{current_date}_{current_time}.png ')
+                            break
+                        elif generar == '2':
+                            break
+                        else:
+                            print('Ingresa una opcion valida\n')
                     break
-                elif respuesta == '2':
+                elif respuesta == '2': #Salir
                     break
                 else:
                     print('Ingresa una opción valida.\n')
@@ -172,11 +199,31 @@ def submenu_consulta_web():
                         #Guardar la ruta en el archivo de rutas
                         with open('Reportes de consulta API/rutas_registros_historicos_pais.txt', mode = 'a') as f:
                             f.write(f'{ruta_data_historicos}\n')
-                        print('La consulta anterior se ha guardado correctamente...') 
-                        break
+                        print('La consulta anterior se ha guardado correctamente') 
+                        print(f'con el nombre: reporte_{current_date}_{current_time}.txt')
                     except:  # noqa: E722
                         print('Ha ocurrido un error. Intentalo de nuevo\n') 
-                        break 
+                        break   
+                    #Preguntar si guardar info
+                    while True:
+                            print('\nDesea generar y guardar gráfica para la consulta anterior?: ')
+                            print('1. Si')
+                            print('2. No. Regresar al menu anterior')
+                            generar = input('')
+                            if generar == '1':
+                                mg.graficar_historicos_pais(df_historicos, current_date,current_time)
+                                
+                                print(f'\nLa grafica se ha guardado como casosVSrecuperadosVSmuertes_{current_date}_{current_time}.png')
+                                
+                                print('Ubicacion:\n')
+                                print(f'Graficas/casosVSrecuperadosVSmuertes_{current_date}_{current_time}.png')
+                                break
+                            elif generar == '2':
+                                break
+                            else:
+                                print('Ingresa una opcion valida\n')
+                    
+                    break 
                 elif respuesta == '2':
                     break
                 else:
@@ -222,11 +269,29 @@ def submenu_consulta_web():
                         #Guardar la ruta en el archivo de rutas
                         with open('Reportes de consulta API/rutas_registros_globales.txt', mode = 'a') as f:
                             f.write(f'{ruta_data_globales}\n')
-                        print('La consulta anterior se ha guardado correctamente...') 
-                        break
+                        print('La consulta anterior se ha guardado correctamente...')  
                     except:  # noqa: E722
                         print('Ha ocurrido un error. Intentalo de nuevo\n') 
                         break 
+                    
+                    while True:
+                        print('\nDesea generar y guardar gráfica para la consulta anterior?: ')
+                        print('1. Si')
+                        print('2. No. Regresar al menu anterior')
+                        generar = input('')
+                        if generar == '1':
+                            mg.graficar_historicos_pais(df_historicos, current_date,current_time)
+                            
+                            print(f'\nLa grafica se ha guardado como casosVSrecuperadosVSmuertes_{current_date}_{current_time}.png')
+                            
+                            print('Ubicacion:\n')
+                            print(f'Graficas/casosVSrecuperadosVSmuertes_{current_date}_{current_time}.png')
+                            break
+                        elif generar == '2':
+                            break
+                        else:
+                            print('Ingresa una opcion valida\n')
+                    break    
                 elif respuesta == '2':
                     break
                 else:
@@ -528,12 +593,11 @@ def submenu_graficas():
         mostrar_submenu(subopciones_names) 
         opcion = input('Seleccione una opción: ')
 
-        if opcion == '1': #Registros Casos totales de COVID-19 para pais en especifico
+        if opcion == '1': #Grafica Casos totales de COVID-19 para pais en especifico
             print('\n')
             print(f'--------{subopciones_names[1]}--------')
-            
-            
-            
+            print('Prueba')
+           
         elif opcion == '2':
             pass
         elif opcion == 'R':
