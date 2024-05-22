@@ -66,7 +66,7 @@ def mostrar_submenu(names_list:list):
     print("R. Regresar al Menú Principal")
 # Consultas a la API
 def submenu_consulta_web():
-    """Invoca las opciones que se pueden consultar ala API"""
+    """Invoca las opciones que se pueden consultar a la API"""
     while True:
         #Se manda la lista de los nombres de las subopciones del menu
         subopciones_names= [{"submenu_name":"Consulta Web"},
@@ -115,14 +115,14 @@ def submenu_consulta_web():
             print('-------------------------------------')
             print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)') 
             
-            print('\nDesea guardar el registro de la consulta anterior?')
-            print('1. Si')
-            print('2. No. Regresar al menu anterior')
-            respuesta = input('Seleccionar opcion: ')
             while True:
+                print('\nDesea guardar el registro de la consulta anterior?')
+                print('1. Si')
+                print('2. No. Regresar al menu anterior')
+                respuesta = input('Seleccionar opcion: ')
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
-                    f = open(f'Reportes de consulta API/reporte_{current_date}_{current_time}.txt', mode = "w")
+                    f = open(f'Reportes de consulta API/reportes_totales_pais/reporte_{current_date}_{current_time}.txt', mode = "w")
                     f.write(f'{data_totales}')
                     f.close()
                     
@@ -131,7 +131,6 @@ def submenu_consulta_web():
                     f = open('Reportes de consulta API/rutas_registros_totales_pais.txt', mode = 'a')
                     f.write(f'{ruta_data_totales}\n')
                     f.close()
-                    #rutas["rutas_txt"].append(ruta_data_totales)
                     print('La consulta anterior se ha guardado correctamente...')
                     break
                 elif respuesta == '2':
@@ -144,6 +143,9 @@ def submenu_consulta_web():
             print(f'--------{subopciones_names[2]}--------')
             pais_historicos = input('Selecciona un pais a buscar, iso2, iso3, o country ID code: ')
             data_historicos = mcw.consultar_historicos(pais_historicos) # 'dict'
+            current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))) #GMT-6
+            current_time = current_datetime.strftime("%H_%M_%S")
+            current_date = current_datetime.strftime("%d_%m_%Y")
             print('\n')
             #Se guardan los datos de interes en un dataframe
             df_historicos = pd.DataFrame(data_historicos['timeline'])
@@ -154,18 +156,41 @@ def submenu_consulta_web():
             print('-------------------------------------')
             print('(Datos de COVID-19 procedentes de la Universidad Johns Hopkins, actualizados cada 10 minutos)')  
             
-            
-            
-            f = open('Reportes de Consulta API/prueba.txt', mode = "w")
-            f.write(f'{data_historicos['country']}\n')
-            f.write(f'{data_historicos['timeline']}')
-            f.close()
-            print('La consulta se ha guardado...')
+            while True:
+                print('\nDesea guardar el registro de la consulta anterior?')
+                print('1. Si')
+                print('2. No. Regresar al menu anterior')
+                respuesta = input('Seleccionar opcion: ')
+                if respuesta == '1':
+                    #Escritura del archivo con el formato reporte_fecha_hora.txt
+                    try : 
+                        f =  open(f'Reportes de consulta API/reportes_historicos_pais/reporte_{current_date}_{current_time}.txt', mode = "w")
+                        f.write(f'{data_historicos}\n')
+                        f.close()
+                        
+                        ruta_data_historicos = f'reporte_{current_date}_{current_time}.txt'
+                        #Guardar la ruta en el archivo de rutas
+                        with open('Reportes de consulta API/rutas_registros_historicos_pais.txt', mode = 'a') as f:
+                            f.write(f'{ruta_data_historicos}\n')
+                        print('La consulta anterior se ha guardado correctamente...') 
+                        break
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n') 
+                        break 
+                elif respuesta == '2':
+                    break
+                else:
+                    print('Ingresa una opción valida.\n')
+                       
             
         elif opcion == '3':
             print('\n')
             print(f'----------------------------------{subopciones_names[3]}--------------------------------')
             data_globales = mcw.consultar_globales() #list
+            current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))) #GMT-6
+            current_time = current_datetime.strftime("%H_%M_%S")
+            current_date = current_datetime.strftime("%d_%m_%Y")
+            
             print('\n')
             df_globales = pd.DataFrame(data_globales) # 'DataFrame'
             #Se eliminan las columnas que no se necesitan del dataframe
@@ -176,17 +201,44 @@ def submenu_consulta_web():
             #Cambiamos los nombres de las columnas e imprimimos el dataframe
             df_globales.columns = ["País", "Casos", "CasosDeHoy", "Muertes", "MuertesDeHoy", "Recuperados","RecuperadosDeHoy", "Activos",
                                        "Críticos", "CasosPorMillon", "MuertesPorMillon","Pruebas", "Población", "Continente"]
-            
             print('-'*113)
             print(df_globales)
             print('-'*113)
             print('(Datos de COVID-19 procedentes de Worldometers, actualizados cada 10 minutos)')  
             
+            while True:
+                print('\nDesea guardar el registro de la consulta anterior?')
+                print('1. Si')
+                print('2. No. Regresar al menu anterior')
+                respuesta = input('Seleccionar opcion: ')
+                if respuesta == '1':
+                    #Escritura del archivo con el formato reporte_fecha_hora.txt
+                    try : 
+                        f =  open(f'Reportes de consulta API/reportes_globales/reporte_{current_date}_{current_time}.txt', mode = "w")
+                        f.write(f'{data_globales}\n')
+                        f.close()
+                        
+                        ruta_data_globales = f'reporte_{current_date}_{current_time}.txt'
+                        #Guardar la ruta en el archivo de rutas
+                        with open('Reportes de consulta API/rutas_registros_globales.txt', mode = 'a') as f:
+                            f.write(f'{ruta_data_globales}\n')
+                        print('La consulta anterior se ha guardado correctamente...') 
+                        break
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n') 
+                        break 
+                elif respuesta == '2':
+                    break
+                else:
+                    print('Ingresa una opción valida.\n')
         elif opcion == '4':
             print('\n')
             print(f'--------{subopciones_names[4]}--------')
             num_dias = input('Ingresa el numero de días a mostrar ("all" para mostrar todos los dias): ')
             data_globales_historicos = mcw.consultar_globales_historicos(num_dias)
+            current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))) #GMT-6
+            current_time = current_datetime.strftime("%H_%M_%S")
+            current_date = current_datetime.strftime("%d_%m_%Y")
             print('\n')
             
             df_globales_historicos = pd.DataFrame(data_globales_historicos)
@@ -196,11 +248,39 @@ def submenu_consulta_web():
             print('-------------------------------------')
             print('(Datos de COVID-19 procedentes de la Universidad Johns Hopkins, actualizados cada 10 minutos)')  
             
+            while True:
+                print('\nDesea guardar el registro de la consulta anterior?')
+                print('1. Si')
+                print('2. No. Regresar al menu anterior')
+                respuesta = input('Seleccionar opcion: ')
+                if respuesta == '1':
+                    #Escritura del archivo con el formato reporte_fecha_hora.txt
+                    try : 
+                        f =  open(f'Reportes de consulta API/reportes_globales_historicos/reporte_{current_date}_{current_time}.txt', mode = "w")
+                        f.write(f'{data_globales_historicos}\n')
+                        f.close()
+                        
+                        ruta_data_globales_historicos = f'reporte_{current_date}_{current_time}.txt'
+                        #Guardar la ruta en el archivo de rutas
+                        with open('Reportes de consulta API/rutas_registros_globales_historicos.txt', mode = 'a') as f:
+                            f.write(f'{ruta_data_globales_historicos}\n')
+                        print('La consulta anterior se ha guardado correctamente...') 
+                        break
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n') 
+                        break 
+                elif respuesta == '2':
+                    break
+                else:
+                    print('Ingresa una opción valida.\n')
         elif opcion == '5':
             print('\n')
             print(f'--------{subopciones_names[5]}--------')
             pais_vacunas = input('Selecciona un pais a buscar, iso2, iso3, o country ID code: ')
             data_vacunas = mcw.consultar_vacunas(pais_vacunas)
+            current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))) #GMT-6
+            current_time = current_datetime.strftime("%H_%M_%S")
+            current_date = current_datetime.strftime("%d_%m_%Y")
             print('\n')
             df_vacunas = pd.DataFrame.from_dict(data_vacunas['timeline'], orient = 'index', columns= ['dosis administradas'])
             print(f'Dosis de vacunas administradas en {pais_vacunas} ({data_vacunas['country']})')
@@ -211,6 +291,31 @@ def submenu_consulta_web():
             print('Dosis de vacuna COVID-19 administradas para paises que han notificado el despliegue de vacunacion.')
             print('Fuente de https://covid.ourworldindata.org/') 
             
+            while True:
+                print('\nDesea guardar el registro de la consulta anterior?')
+                print('1. Si')
+                print('2. No. Regresar al menu anterior')
+                respuesta = input('Seleccionar opcion: ')
+                if respuesta == '1':
+                    #Escritura del archivo con el formato reporte_fecha_hora.txt
+                    try : 
+                        f =  open(f'Reportes de consulta API/reportes_vacunas/reporte_{current_date}_{current_time}.txt', mode = "w")
+                        f.write(f'{data_vacunas}\n')
+                        f.close()
+                        
+                        ruta_data_vacunas = f'reporte_{current_date}_{current_time}.txt'
+                        #Guardar la ruta en el archivo de rutas
+                        with open('Reportes de consulta API/rutas_registros_vacunas.txt', mode = 'a') as f:
+                            f.write(f'{ruta_data_vacunas}\n')
+                        print('La consulta anterior se ha guardado correctamente...') 
+                        break
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n') 
+                        break 
+                elif respuesta == '2':
+                    break
+                else:
+                    print('Ingresa una opción valida.\n')
         elif opcion == 'R':
             break
              
@@ -252,9 +357,9 @@ def submenu_consulta_registros():
                             print(ruta)
                     respuesta = input('Ingresa el nombre del registro (formato reporte_fecha_hora) a buscar: ')
                     try:
-                        with open(f'Reportes de consulta API/{respuesta}') as f:
+                        with open(f'Reportes de consulta API/reportes_totales_pais/{respuesta}') as f:
                             print('\nRegistro encontrado:\n')
-                            print(f.read())
+                            print(f'Reportes de consulta API/reportes_totales_pais/{respuesta}') #print se imprime la ruta del archivo encontrado
                             
                     except FileNotFoundError:
                         print('No se ha encontrado archivo con ese nombre...\n')
@@ -265,13 +370,120 @@ def submenu_consulta_registros():
                 else:
                     print('Elije una opcion valida.\n')  
         elif opcion == '2': #"Registros Casos historicos totales de COVID-19 para pais en especifico"
-            pass
+            print('\n')
+            print(f'--------{subopciones_names[2]}--------')
+            while True:
+                print('-------------------')
+                print('1. Buscar registro ')
+                print('R. Regresa al menu anterior')
+                eleccion = input('Selecciona una opcion: ')
+                if eleccion == '1':
+                    #Mostramos todas las rutas de las consultas disponibles
+                    print('\nReportes disponibles: ')
+                    with open('Reportes de consulta API/rutas_registros_historicos_pais.txt') as f:
+                        for ruta in f:
+                            print(ruta)
+                    respuesta = input('Ingresa el nombre del registro (formato reporte_fecha_hora) a buscar: ')
+                    try:
+                        with open(f'Reportes de consulta API/reportes_historicos_pais/{respuesta}') as f:
+                            print('\nRegistro encontrado:\n')
+                            print(f'Reportes de consulta API/reportes_historicos_pais/{respuesta}')
+                            
+                    except FileNotFoundError:
+                        print('No se ha encontrado archivo con ese nombre...\n')
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n')
+                elif eleccion == 'R':
+                    break
+                else:
+                    print('Elije una opcion valida.\n')  
         elif opcion == '3': #"Registros Casos totales de COVID-19 para todos los paises"
-            pass
+            print('\n')
+            print(f'--------{subopciones_names[3]}--------')
+            
+            while True:
+                print('-------------------')
+                print('1. Buscar registro ')
+                print('R. Regresa al menu anterior')
+                eleccion = input('Selecciona una opcion: ')
+                if eleccion == '1':
+                    #Mostramos todas las rutas de las consultas disponibles
+                    print('\nReportes disponibles: ')
+                    with open('Reportes de consulta API/rutas_registros_globales.txt') as f:
+                        for ruta in f:
+                            print(ruta)
+                    respuesta = input('Ingresa el nombre del registro (formato reporte_fecha_hora) a buscar: ')
+                    try:
+                        with open(f'Reportes de consulta API/reportes_globales/{respuesta}') as f:
+                            print('\nRegistro encontrado:\n')
+                            print(f'Reportes de consulta API/reportes_globales/{respuesta}')
+                            
+                    except FileNotFoundError:
+                        print('No se ha encontrado archivo con ese nombre...\n')
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n')
+                elif eleccion == 'R':
+                    break
+                else:
+                    print('Elije una opcion valida.\n')  
         elif opcion == '4': #"Registros Casos globales acumulados historicos de COVID-19"
-            pass
+            print('\n')
+            print(f'--------{subopciones_names[4]}--------')
+            
+            while True:
+                print('-------------------')
+                print('1. Buscar registro ')
+                print('R. Regresa al menu anterior')
+                eleccion = input('Selecciona una opcion: ')
+                if eleccion == '1':
+                    #Mostramos todas las rutas de las consultas disponibles
+                    print('\nReportes disponibles: ')
+                    with open('Reportes de consulta API/rutas_registros_globales_historicos.txt') as f:
+                        for ruta in f:
+                            print(ruta)
+                    respuesta = input('Ingresa el nombre del registro (formato reporte_fecha_hora) a buscar: ')
+                    try:
+                        with open(f'Reportes de consulta API/reportes_globales_historicos/{respuesta}') as f:
+                            print('\nRegistro encontrado:\n')
+                            print(f'Reportes de consulta API/reportes_globales_historicos/{respuesta}')
+                            
+                    except FileNotFoundError:
+                        print('No se ha encontrado archivo con ese nombre...\n')
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n')
+                elif eleccion == 'R':
+                    break
+                else:
+                    print('Elije una opcion valida.\n') 
         elif opcion == '5': #"Registros Dosis de vacunas administradas para pais en especifico"
-            pass
+            print('\n')
+            print(f'--------{subopciones_names[5]}--------')
+            
+            while True:
+                print('-------------------')
+                print('1. Buscar registro ')
+                print('R. Regresa al menu anterior')
+                eleccion = input('Selecciona una opcion: ')
+                if eleccion == '1':
+                    #Mostramos todas las rutas de las consultas disponibles
+                    print('\nReportes disponibles: ')
+                    with open('Reportes de consulta API/rutas_registros_vacunas.txt') as f:
+                        for ruta in f:
+                            print(ruta)
+                    respuesta = input('Ingresa el nombre del registro (formato reporte_fecha_hora) a buscar: ')
+                    try:
+                        with open(f'Reportes de consulta API/reportes_vacunas/{respuesta}') as f:
+                            print('\nRegistro encontrado:\n')
+                            print(f'Reportes de consulta API/reportes_vacunas/{respuesta}')
+                            
+                    except FileNotFoundError:
+                        print('No se ha encontrado archivo con ese nombre...\n')
+                    except:  # noqa: E722
+                        print('Ha ocurrido un error. Intentalo de nuevo\n')
+                elif eleccion == 'R':
+                    break
+                else:
+                    print('Elije una opcion valida.\n') 
         elif opcion == 'R': #Regresar
             break
         else:
@@ -300,25 +512,34 @@ def submenu_estadisticas():
     """
 #submenú para consultar las graficas de las consultas a la API
 def submenu_graficas():
-    pass
+    """
+    Muestra la gráfica de la ultima consulta realizada a la API para cada opcion del menu de consulta web.
     """
     while True:
-        subopciones_names = [] #Agregar nombres de las opciones que tendrá el submenu
-        mostrar_submenu_helper(subopciones_names) 
-        opcion = input("Seleccione una opción: ")
+        subopciones_names= [{"submenu_name":"Ver graficas"},
+                                "Ver grafica de Casos totales de COVID-19 para pais en específico",
+                                "Ver grafica de Casos historicos totales de COVID-19 para pais en especifico",
+                                "Ver grafica de Casos totales de COVID-19 para todos los paises",
+                                "Ver grafica de Casos globales acumulados historicos de COVID-19",
+                                "Ver grafica de Dosis de vacunas administradas para pais en especifico",
+                                ]
         
-        if opcion == '1':
-            #print("Ha seleccionado {}".format(subopciones_names[1]))
-            pass
+        
+        mostrar_submenu(subopciones_names) 
+        opcion = input('Seleccione una opción: ')
+
+        if opcion == '1': #Registros Casos totales de COVID-19 para pais en especifico
+            print('\n')
+            print(f'--------{subopciones_names[1]}--------')
+            
+            
+            
         elif opcion == '2':
-            #print("Ha seleccionado {}".format(subopciones_names[2]))
             pass
-        elif opcion == '3':
-            #print("Ha seleccionado {}".format(subopciones_names[3]))
+        elif opcion == 'R':
             break
         else:
-            print("Opción no válida. Por favor, elija una opción del 1 al 3.")
-    """
+            print('Ingresa una opcion valida')
 
 def submenu_borrar_registros():
     pass
