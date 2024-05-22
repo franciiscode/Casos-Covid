@@ -49,7 +49,6 @@ def menu_principal():
         else: 
             print("Opción no válida. Elije una opción del 1 al 6.")
 
-
 # Opciones del menu principal---
 
 def mostrar_submenu(names_list:list):
@@ -63,6 +62,7 @@ def mostrar_submenu(names_list:list):
         print("{}. {}".format(opcion,names_list[opcion]))
     print("R. Regresar al Menú Principal")
 # Consultas a la API
+
 def submenu_consulta_web():
     """Invoca las opciones que se pueden consultar a la API"""
     while True:
@@ -202,7 +202,7 @@ def submenu_consulta_web():
             while True:
                 print('\nDesea guardar el registro de la consulta anterior?')
                 print('1. Si')
-                print('2. No. Regresar al menu anterior')
+                print('2. No.')
                 respuesta = input('Seleccionar opcion: ')
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
@@ -272,7 +272,7 @@ def submenu_consulta_web():
             while True:
                 print('\nDesea guardar el registro de la consulta anterior?')
                 print('1. Si')
-                print('2. No. Regresar al menu anterior')
+                print('2. No.')
                 respuesta = input('Seleccionar opcion: ')
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
@@ -338,7 +338,7 @@ def submenu_consulta_web():
             while True:
                 print('\nDesea guardar el registro de la consulta anterior?')
                 print('1. Si')
-                print('2. No. Regresar al menu anterior')
+                print('2. No.')
                 respuesta = input('Seleccionar opcion: ')
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
@@ -401,7 +401,7 @@ def submenu_consulta_web():
             while True:
                 print('\nDesea guardar el registro de la consulta anterior?')
                 print('1. Si')
-                print('2. No. Regresar al menu anterior')
+                print('2. No.')
                 respuesta = input('Seleccionar opcion: ')
                 if respuesta == '1':
                     #Escritura del archivo con el formato reporte_fecha_hora.txt
@@ -674,6 +674,8 @@ def submenu_estadisticas():
         elif opcion == '5':
             print("Ha seleccionado {}".format(subopciones_names[5]))
             break
+        elif opcion == 'R':
+            break
         else:
             print("Opción no válida. Por favor, elija una opción del 1 al 3.")
     
@@ -762,6 +764,7 @@ def submenu_borrar_registros():
             if not os.path.isdir(carpeta):
                 print("La carpeta especificada no existe.")
                 return
+            
             archivos_a_borrar = input("Introduce los nombres de los archivos a borrar, separados por comas: ").split(',')
             archivos_a_borrar = [archivo.strip() for archivo in archivos_a_borrar]  # Elimina espacios en blanco adicionales
 

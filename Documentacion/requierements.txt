@@ -1,0 +1,20 @@
+
+-Visual Studio Code
+-Python 3.12.1
+Tener instalado el manejador de paquetes 'pip' 
+
+Instalar los paquetes: 
+ #Ejemplo
+ pip install requests
+
+
+- Modulos Necesarios:
+    -pip install  os
+    -pip install  pandas
+    -pip install  seaborn
+    -pip install  pandas openpyxlsx,
+    -pip install sys
+    -pip install  Pillow
+    -pip install datetime 
+    -pip install matplotlib.pyplot
+    -pip install requests 
