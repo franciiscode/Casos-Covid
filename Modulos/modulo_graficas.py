@@ -1,3 +1,4 @@
+from turtle import color
 import matplotlib.pyplot as plt 
 import seaborn as sns
 
@@ -16,12 +17,47 @@ def graficar_totales_pais(df):
     plt.ylabel('Valor')
     return plt
     
-def graficar_historicos_pais(df, current_date, current_time):
+def graficar_historicos_pais(df_historicos, current_date, current_time):
     
-    df['cases'].plot(kind='line', figsize=(8, 4))
+    df_historicos['cases'].plot(kind='line', figsize=(8, 4))
     
-    df['recovered'].plot(kind='line', figsize=(8, 4))
+    df_historicos['recovered'].plot(kind='line', figsize=(8, 4))
     
-    df['deaths'].plot(kind='line', figsize=(8, 4), title='Casos (azul) vs Recuperados (naranja) vs Muertes (verde)')
+    df_historicos['deaths'].plot(kind='line', figsize=(8, 4), title='Casos (azul) vs Recuperados (naranja) vs Muertes (verde)')
     plt.savefig(f'Graficas/casosVSrecuperadosVSmuertes_{current_date}_{current_time}.png') #guardar grafica
     
+def graficar_globales(df_globales, current_date, current_time):
+    # Numero mas alto de casos activos por pais.
+    df_globales.sort_values('Activos', ascending=False).head(10).plot(x='País', y='Activos', kind='bar')
+    plt.savefig(f'Graficas/casos_activos_{current_date}_{current_time}.png') #guardar grafica
+    
+    # Continente vs Muertes grafico tipo violin
+    figsize = (12, 1.2 * len(df_globales['Continente'].unique()))
+    plt.figure(figsize=figsize)
+    sns.violinplot(df_globales, x='Muertes', y='Continente', inner='stick', palette='Dark2')
+    sns.despine(top=True, right=True, bottom=True, left=True)
+    plt.savefig(f'Graficas/continenteVSmuertes{current_date}_{current_time}.png') #guardar grafica
+    
+    #Continente vs Casos
+    figsize = (12, 1.2 * len(df_globales['Continente'].unique()))
+    plt.figure(figsize=figsize)
+    sns.violinplot(df_globales, x='Casos', y='Continente', inner='stick', palette='Dark2')
+    sns.despine(top=True, right=True, bottom=True, left=True)
+    plt.savefig(f'Graficas/continenteVScasos{current_date}_{current_time}.png') #guardar grafica
+    
+def graficar_globales_historicos(df_globales_historicos, current_date, current_time):
+    
+    df_globales_historicos['cases'].plot(kind='line', figsize=(8, 4))
+    #plt.savefig(f'Graficas/casos_historicos_globales_{current_date}_{current_time}.png') #guardar grafica
+
+    df_globales_historicos['recovered'].plot(kind='line', figsize=(8, 4))
+    
+
+    df_globales_historicos['deaths'].plot(kind='line', figsize=(8, 4), title='Casos (azul) vs Casos recuperados (naranja) vs Muertes (verde)')
+    plt.gca().spines[['top', 'right']].set_visible(False)
+    plt.savefig(f'Graficas/casosVSrecuperadosVSmuertes_hist_{current_date}_{current_time}.png') #guardar grafica
+
+def graficar_vacunas(df_vacunas, current_date, current_time):
+    df_vacunas['dosis administradas'].plot(kind='line', figsize=(8, 4), title='dosis administradas', color = 'orange')
+    plt.gca().spines[['top', 'right']].set_visible(False)
+    plt.savefig(f'Graficas/dosis_administradas_{current_date}_{current_time}.png')
