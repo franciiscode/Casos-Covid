@@ -1,23 +1,16 @@
-#Modulos
-#from math import e
-import os#
-import sys 
-sys.path.append('Modulos') #Agrega los directorios de los modulos al PATH de python
-import pandas as pd #
-#import numpy as pd
-import datetime #modulo para mostrar la fecha y hora
+#Modulos externos
+import os #manejar los archivos
+from sys import path #
+path.append('Modulos') #Agrega los directorios de los modulos al PATH de python
+import pandas as pd #DataFrames
+from PIL import Image #Mostrar las gráficas
+import datetime #modulo para mostrar la fecha (d-m-a) y hora (h-m-s) 
+#import numpy as np
+#Modulos propios
 import modulo_consulta_web as mcw
-import modulo_consulta_registros as mcr
-#import modulo_estadisticas as mstats
+import modulo_estadisticas as mstats
 import modulo_graficas as mg
 
-graficas = {
-    'totales_pais': [],
-    'historicos_pais': [],
-    'globales': [],
-    'globales_historicos': [],
-    'vacunas': []
-    }
 
 # Mostrar menu prinicipal
 def mostrar_menu_principal():
@@ -46,11 +39,11 @@ def menu_principal():
             submenu_consulta_registros()
             
         elif opcion == '3': #estadisticas
-            pass
+            submenu_estadisticas()
         elif opcion == '4': #graficas
             submenu_graficas()
         elif opcion == '5':#borrar datos
-            pass
+            submenu_borrar_registros()
         elif opcion == '6': #Salir del programa
             print("Has salido del programa.")
             break
@@ -64,7 +57,7 @@ def mostrar_submenu(names_list:list):
     """ Muestra las subopciones para cada opcion del menú principal
     """
     print("\n--- Submenú {} ---\n".format(names_list[0]["submenu_name"]))
-    print("Selecciona una opción a consultar")
+    print("Selecciona una opción")
     
     #Muestra las opciones para cada submenú
     for opcion in range(1,len(names_list)):
@@ -428,7 +421,7 @@ def submenu_consulta_web():
             break
              
         else:
-            print("Opción no valida. Por favor, elija una opción del 1 al 5.")
+            print("Opción no valida. Por favor, elija una opción valida.")
             
 #submenú para consultar los registros hechos de la función .submenu_consulta_web()
 def submenu_consulta_registros():
@@ -621,36 +614,108 @@ def submenu_estadisticas():
 #submenú para consultar las graficas de las consultas a la API
 def submenu_graficas():
     """
-    Muestra la gráfica de la ultima consulta realizada a la API para cada opcion del menu de consulta web.
+    Muestra la gráficas buscadas por el usuario.
     """
-    while True:
-        subopciones_names= [{"submenu_name":"Ver graficas"},
-                                "Ver grafica de Casos totales de COVID-19 para pais en específico",
-                                "Ver grafica de Casos historicos totales de COVID-19 para pais en especifico",
-                                "Ver grafica de Casos totales de COVID-19 para todos los paises",
-                                "Ver grafica de Casos globales acumulados historicos de COVID-19",
-                                "Ver grafica de Dosis de vacunas administradas para pais en especifico",
-                                ]
-        
-        
-        mostrar_submenu(subopciones_names) 
-        opcion = input('Seleccione una opción: ')
-
-        if opcion == '1': #Grafica Casos totales de COVID-19 para pais en especifico
-            print('\n')
-            print(f'--------{subopciones_names[1]}--------')
+    def mostrar_imagen(ruta_archivo):
+        try:
+            # Abre la imagen usando Pillow
+            with Image.open(ruta_archivo) as img:
+                img.show()  # Muestra la imagen
+                print(f"Mostrando la imagen '{ruta_archivo}'.")
+        except FileNotFoundError:
+            print(f"El archivo '{ruta_archivo}' no existe.")
+        except PermissionError:
+            print(f"Permiso denegado para leer el archivo '{ruta_archivo}'.")
+        except Exception as e:
+            print(f"Ocurrió un error al intentar leer el archivo '{ruta_archivo}': {e}")
             
+    while True:
+        print('\n--- Submenú Buscar gráficas ---')
+        print('Opciones:')
+        print('1. Buscar grafica')
+        print('2. Regresar')
+        elegir = input('Selecciona una opcion: ')
+        
+        if elegir == '1':
+            carpeta = 'Graficas'
+            if not os.path.isdir(carpeta):
+                print("La carpeta 'Graficas' no existe.")
+                return
+
+            nombre_archivo = input("Introduce el nombre del archivo de la gráfica (con extensión)\nAsegurate que el archivo se encuentre en la carpeta Graficas: ").strip()
+            
+            ruta_archivo = os.path.join(carpeta, nombre_archivo)
+
+            if os.path.isfile(ruta_archivo):
+                mostrar_imagen(ruta_archivo)
+            else:
+                print(f"El archivo '{nombre_archivo}' no se encontró en la carpeta '{carpeta}'.")
+
            
-        elif opcion == '2':
-            pass
-        elif opcion == 'R':
+        elif elegir =='2':
+            break
+        else:
+            print('Elije una opcion valida')
+        
+
+def submenu_borrar_registros():
+    """ Borra los archivos de los registros guardados por el usuario"""
+    print('\n--- Submenú Borrar archivos ---')
+    def borrar_archivos_en_carpeta(carpeta, archivos):
+        for archivo in archivos:
+            ruta_archivo = os.path.join(carpeta, archivo)
+            try:
+                os.remove(ruta_archivo)
+                print(f"Archivo '{ruta_archivo}' borrado exitosamente.")
+            except FileNotFoundError:
+                print(f"El archivo '{ruta_archivo}' no existe.")
+            except PermissionError:
+                print(f"Permiso denegado para borrar el archivo '{ruta_archivo}'.")
+            except Exception as e:
+                print(f"Ocurrió un error al intentar borrar el archivo '{ruta_archivo}': {e}")
+    
+    def borrar_todos_los_archivos(carpeta):
+        try:
+            for archivo in os.listdir(carpeta):
+                ruta_archivo = os.path.join(carpeta, archivo)
+                if os.path.isfile(ruta_archivo):
+                    os.remove(ruta_archivo)
+                    print(f"Archivo '{ruta_archivo}' borrado exitosamente.")
+        except Exception as e:
+            print(f"Ocurrió un error al intentar borrar los archivos en '{carpeta}': {e}")
+            
+    while True:
+        print('Opciones:')
+        print('1. Borrador de archivos en una carpeta específica')
+        print('2. Borrador todos los archivos de una carpeta específica')
+        print('R. Regresar ')
+        elegir = input('Selecciona una opcion: ')
+        
+        if elegir == '1':
+            carpeta = input("Introduce la ruta de la carpeta: ").strip()
+            
+            if not os.path.isdir(carpeta):
+                print("La carpeta especificada no existe.")
+                return
+            archivos_a_borrar = input("Introduce los nombres de los archivos a borrar, separados por comas: ").split(',')
+            archivos_a_borrar = [archivo.strip() for archivo in archivos_a_borrar]  # Elimina espacios en blanco adicionales
+
+            confirmar = input(f"¿Seguro que quieres borrar estos archivos en '{carpeta}'? {archivos_a_borrar} (s/n): ")
+            if confirmar.lower() == 's':
+                borrar_archivos_en_carpeta(carpeta, archivos_a_borrar)
+            else:
+                print("Operación cancelada.")
+        elif elegir== '2':
+            carpeta = input("Introduce la ruta de la carpeta: ").strip()
+            confirmar = input(f"¿Seguro que quieres borrar todos los archivos en '{carpeta}'? (s/n): ")
+            if confirmar.lower() == 's':
+                borrar_todos_los_archivos(carpeta)
+            else:
+                print("Operación cancelada.")
+        elif elegir== 'R':
             break
         else:
             print('Ingresa una opcion valida')
-
-def submenu_borrar_registros():
-   pass
-
 #iniciar el programa
 if __name__ == "__main__":
     menu_principal() 
